@@ -24,3 +24,27 @@ except ModuleNotFoundError:
 print(math.sqrt(16))
 '''
 #RECURSIONERROR
+'''
+def recurse():
+    return recurse()
+
+recurse()
+'''
+
+'''
+def recurse(n):
+    if n == 0:
+        return "Done"
+    return recurse(n - 1)
+
+print(recurse(5))
+'''
+
+'''
+try:
+    def recurse():
+        return recurse()
+    recurse()
+except RecursionError:
+    print("Too many recursive calls!")
+'''
