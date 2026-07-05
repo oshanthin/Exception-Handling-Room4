@@ -22,19 +22,23 @@ def set_mark(student_id, mark, overwrite=False):
 
     print("student_id:", student_id)
     print("mark:", mark)
-    
+    print("overwrite:", overwrite)
+
+
     if not (
         student_id.startswith("S")
         and len(student_id) == 4
         and student_id[1:].isdigit()
     ):
-        raise InvalidIDFormatError("Invalid ID format (e.g. S007)")
+        raise InvalidIDFormatError(
+            "ID must be S + 3 digits (e.g. S007)"
+        )
 
-    
+
     if student_id in students and not overwrite:
         raise DuplicateStudentError("Student already exists")
 
-    # Convert mark with exception chaining
+   
     try:
         mark = int(mark)
     except ValueError as e:
@@ -48,43 +52,33 @@ def set_mark(student_id, mark, overwrite=False):
     return "Record Saved"
 
 
-def batch_register(records, overwrite=False):
-
-    summary = {
-        "success": [],
-        "failed": []
-    }
-
-    for student_id, mark in records:
-        try:
-            result = set_mark(student_id, mark, overwrite)
-            summary["success"].append((student_id, result))
-
-        except Exception as e:
-            summary["failed"].append((student_id, str(e)))
-
-    return summary
-
-
-
 records = [
-    ("S007", 75),
-    ("S001", 88),
-    ("S008", 120),
-    ("S009", "eighty"),
-    ("S001", 90),
-    ("S010", 85)
+    ("S007", 75, False),
+    ("S001", 88, False),
+    ("S008", 120, False),
+    ("S009", "eighty", False),
+    ("S001", 90, True)
 ]
 
 
+for sid, mark, overwrite in records:
+    try:
+        result = set_mark(sid, mark, overwrite)
 
-result = batch_register(records)
+    except InvalidMarkError as e:
+        print("InvalidMarkError:", e)
 
+    except DuplicateStudentError as e:
+        print("DuplicateStudentError:", e)
 
-print("SUCCESS RECORDS:")
-for item in result["success"]:
-    print(item)
+    except InvalidIDFormatError as e:
+        print("InvalidIDFormatError:", e)
 
-print("\nFAILED RECORDS:")
-for item in result["failed"]:
-    print(item)
+    except Exception as e:
+        print("Unexpected Error:", e)
+
+    else:
+        print(result)
+
+    finally:
+        print("Operation Completed\n")
